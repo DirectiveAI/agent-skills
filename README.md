@@ -23,6 +23,13 @@ skill drives the loop.
 ## Why a skill (not just docs)
 
 Directive is a *protocol* over the task lifecycle — the dedup guarantee only holds
-if check-in reliably happens *before* work starts. A skill carries that procedural
-knowledge to the agent and wires it to the CLI, which also handles the periodic
-heartbeat and token refresh.
+if check-in reliably happens *before* work starts (see Directive ADR 0007). A
+skill carries that procedural knowledge to the agent and wires it to the CLI,
+which also handles the periodic heartbeat and token refresh.
+
+---
+
+> **Provenance:** this bundle is developed in the Directive monorepo
+> (`directiveai/resonance`, under `agent-skills/`) and published here verbatim. Edit
+> it there. The CLI command/flag surface the skill references is drift-tested
+> against the CLI in that repo (`cli/test/skill.test.ts`).
