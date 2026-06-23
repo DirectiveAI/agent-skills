@@ -8,8 +8,14 @@ and how to use it.
 | Command | What it does |
 | --- | --- |
 | `directive login` | Browser OAuth (authorization-code + PKCE loopback); stores tokens `0600`. |
+| `directive login --headless` | Device-code flow (RFC 8628) for CI / no-browser hosts: prints a URL + short code to approve from any browser, then polls. |
 | `directive logout` | Forget the stored tokens and any active task. |
-| `directive whoami` | Show the signed-in account, its orgs (with ids), and the default agent. |
+| `directive whoami` | Show the signed-in account, its orgs (with ids), the default agent, and the active task. |
+
+**Headless / CI without an interactive login:** set `DIRECTIVE_REFRESH_TOKEN`
+(recommended — the CLI mints a fresh access token per run) or `DIRECTIVE_TOKEN`
+(a short-lived access token) from a secret store. Env credentials take precedence
+over the on-disk token file and are never written to disk.
 
 ## Agents
 
@@ -36,15 +42,23 @@ and how to use it.
 | Flag / var | Purpose |
 | --- | --- |
 | `--agent <id>` / `DIRECTIVE_AGENT_ID` | Act as a specific agent (else the default from `directive agent create`). |
+| `--json` | Emit one machine-readable JSON object on stdout (the result, or `{ "error": code, "message": … }`). Human/progress lines go to stderr; the exit code still signals success. Prefer this when parsing output. |
 | `--version`, `--help` | Print the version / usage. |
+| `DIRECTIVE_TOKEN` / `DIRECTIVE_REFRESH_TOKEN` | Headless credentials (see Auth). Take precedence over the on-disk token file. |
 | `DIRECTIVE_API_BASE` / `DIRECTIVE_APP_BASE` | Point at a non-production API / web app. |
 | `DIRECTIVE_CONFIG_DIR` | Override the config directory (default `~/.config/directive`). |
 
 ## Exit codes
 
+Stable contract, so scripts and agents can branch without parsing prose.
+
 | Code | Meaning |
 | --- | --- |
 | `0` | Success. |
-| `1` | Usage error, not logged in, or a failed request. |
-| `4` | `check-in` / `start`: the task is already claimed by another agent — do not duplicate it. |
-| other | `start` propagates the wrapped command's own exit code. |
+| `1` | Unexpected / runtime error (network, unknown server error). |
+| `2` | Usage error (missing or invalid flags, unknown command). |
+| `3` | Auth required (not logged in, token invalid/expired, account not provisioned) — run `directive login`. |
+| `4` | `check-in` / `start`: already claimed by another agent — do **not** duplicate it. |
+| `5` | Not found (task, agent, or active claim). |
+| `6` | Plan limit reached — upgrade at app.directive.ai/app/billing. |
+| other | `start` / `run` propagate the wrapped command's own exit code (and `127` if it isn't executable). |

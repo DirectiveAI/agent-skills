@@ -23,8 +23,15 @@ directive login                      # opens your browser to authorize this CLI
 directive agent create --org <org-id> --name "this agent"   # only if you have no agent yet
 ```
 
-`directive whoami` prints your account, your orgs (with their ids), and the
-default agent. Login persists — you normally do this once.
+`directive whoami` prints your account, your orgs (with their ids), the default
+agent, and the active task. Login persists — you normally do this once.
+
+On a headless box (CI, container, SSH) where you can't open a browser, either run
+`directive login --headless` (it prints a URL + short code to approve from any
+browser) or set `DIRECTIVE_REFRESH_TOKEN` from a secret so no interactive login is
+needed. Add `--json` to any command to get one machine-readable JSON object on
+stdout instead of prose — prefer it when you parse the output. Branch on the exit
+code (`0` ok, `3` re-login, `4` already claimed; full table in the reference).
 
 ## The loop
 
