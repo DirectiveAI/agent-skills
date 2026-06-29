@@ -60,5 +60,6 @@ Stable contract, so scripts and agents can branch without parsing prose.
 | `3` | Auth required (not logged in, token invalid/expired, account not provisioned) — run `directive login`. |
 | `4` | `check-in` / `start`: already claimed by another agent — do **not** duplicate it. |
 | `5` | Not found (task, agent, or active claim). |
-| `6` | Plan limit reached — upgrade at app.directive.ai/app/billing. |
+| `6` | Plan limit reached (a meter cap on an active plan) — raise it at app.directive.ai/billing. |
+| `7` | No active subscription — the org has no plan or trial started, so coordination is paused. An org owner must start one (free 14-day trial) at app.directive.ai/billing; the agent can't proceed. |
 | other | `start` / `run` propagate the wrapped command's own exit code (and `127` if it isn't executable). |

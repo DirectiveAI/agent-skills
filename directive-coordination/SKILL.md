@@ -31,7 +31,8 @@ On a headless box (CI, container, SSH) where you can't open a browser, either ru
 browser) or set `DIRECTIVE_REFRESH_TOKEN` from a secret so no interactive login is
 needed. Add `--json` to any command to get one machine-readable JSON object on
 stdout instead of prose — prefer it when you parse the output. Branch on the exit
-code (`0` ok, `3` re-login, `4` already claimed; full table in the reference).
+code (`0` ok, `3` re-login, `4` already claimed, `7` no active subscription; full
+table in the reference).
 
 ## The loop
 
@@ -94,6 +95,10 @@ pass `--task <id>` to target a different one.
 - **Always report a terminal status** (`completed` / `abandoned` / `released`) so
   the task doesn't look stuck. A crash without a report expires on its own, but
   reporting is cleaner and faster for everyone else.
+- **No active subscription? Stop and tell a human.** If a command exits `7`
+  (`subscription_required`), the organization has no active plan or trial, so
+  coordination is paused for everyone — you can't work around it. Ask an org owner
+  to start a plan (free 14-day trial) at app.directive.ai/billing, then retry.
 - One task per `start`; for several at once, track them with explicit `--task` ids.
 
 See [`reference/cli.md`](reference/cli.md) for the full command and flag reference.
