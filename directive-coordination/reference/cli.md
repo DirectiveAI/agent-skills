@@ -24,24 +24,38 @@ over the on-disk token file and are never written to disk.
 | `directive agent create --org <id> --name <name>` | Register an agent and set it as the default. |
 | `directive agent list --org <id>` | List the org's agents (`*` marks the default). |
 
+## Projects
+
+Work is organized into projects, and every task belongs to one. Pick a project
+before checking in.
+
+| Command | What it does |
+| --- | --- |
+| `directive project list --org <id>` | List the projects you belong to (`*` marks the current one). |
+| `directive project create --org <id> --name <name> [--slug <s>] [--description <d>]` | Create a project and set it as the current one. |
+| `directive project use <id>` | Set the current project for future check-ins. |
+
 ## Coordination loop
 
 | Command | What it does |
 | --- | --- |
-| `directive check-in --title <t> [--tracker <github\|jira\|productboard\|other>] [--external-id <id>] [--external-url <url>] [--description <d>] [--dedup-key <k>]` | Claim a task (dedup). Exit 0 = claimed, exit 4 = already claimed by another agent. |
+| `directive check-in --title <t> [--project <id>] [--tracker <github\|jira\|productboard\|other>] [--external-id <id>] [--external-url <url>] [--description <d>] [--dedup-key <k>]` | Claim a task (dedup) in a project. Exit 0 = claimed, exit 4 = already claimed by another agent. |
 | `directive heartbeat [--task <id>]` | Keep the active claim alive. |
 | `directive report --status <completed\|blocked\|abandoned\|released> [--task <id>] [--note <n>]` | Report progress / release the claim. |
 | `directive usage --input <n> --output <n> [--model <m>] [--cost <micro_usd>] [--task <id>]` | Record token usage / cost for a task. |
-| `directive start --title <t> [check-in flags] -- <command…>` | Check in, heartbeat while the command runs, then report completed (exit 0) or abandoned (non-zero). Propagates the command's exit code. |
+| `directive start --title <t> [--project <id>] [check-in flags] -- <command…>` | Check in, heartbeat while the command runs, then report completed (exit 0) or abandoned (non-zero). Propagates the command's exit code. |
 
-`heartbeat` / `report` / `usage` default to the last task you checked in to; pass
-`--task <id>` to override.
+A project is **required** for `check-in` / `start`: it comes from `--project
+<id>`, else `DIRECTIVE_PROJECT_ID`, else `directive project use`. `heartbeat` /
+`report` / `usage` default to the last task you checked in to; pass `--task <id>`
+to override.
 
 ## Global flags & environment
 
 | Flag / var | Purpose |
 | --- | --- |
 | `--agent <id>` / `DIRECTIVE_AGENT_ID` | Act as a specific agent (else the default from `directive agent create`). |
+| `--project <id>` / `DIRECTIVE_PROJECT_ID` | Check in to a specific project (else the current one from `directive project use`). |
 | `--json` | Emit one machine-readable JSON object on stdout (the result, or `{ "error": code, "message": … }`). Human/progress lines go to stderr; the exit code still signals success. Prefer this when parsing output. |
 | `--version`, `--help` | Print the version / usage. |
 | `DIRECTIVE_TOKEN` / `DIRECTIVE_REFRESH_TOKEN` | Headless credentials (see Auth). Take precedence over the on-disk token file. |

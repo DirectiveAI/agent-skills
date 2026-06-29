@@ -21,10 +21,29 @@ organization might pick up the same thing.
 npm install -g @directiveai/cli      # or run ad-hoc: npx @directiveai/cli <command>
 directive login                      # opens your browser to authorize this CLI
 directive agent create --org <org-id> --name "this agent"   # only if you have no agent yet
+directive project use <project-id>   # pick the project this work belongs to (see below)
 ```
 
 `directive whoami` prints your account, your orgs (with their ids), the default
-agent, and the active task. Login persists — you normally do this once.
+agent, the current project, and the active task. Login persists — you normally do
+this once.
+
+## Pick a project
+
+Work is organized into **projects**, and **every task belongs to one** — the
+scoreboard, dedup, and cost are all tracked per project. Choose the project before
+you check in:
+
+```bash
+directive project list --org <org-id>     # the projects you belong to (with ids)
+directive project use <project-id>        # remember it for future check-ins
+```
+
+Each org has a **"Default Project"** to fall back on. Once you've run `project
+use`, the coordination commands target that project automatically; otherwise pass
+`--project <project-id>` on each `check-in` / `start` (or set
+`DIRECTIVE_PROJECT_ID`). A project is **required** — a check-in with no project
+fails.
 
 On a headless box (CI, container, SSH) where you can't open a browser, either run
 `directive login --headless` (it prints a URL + short code to approve from any
@@ -43,6 +62,10 @@ directive check-in --title "Fix flaky auth test" \
   --tracker github --external-id "acme/api#1423" \
   --external-url "https://github.com/acme/api/issues/1423"
 ```
+
+This uses the project from `directive project use`; add `--project <project-id>`
+to target a different one. (The same tracker item can be worked independently in
+two different projects.)
 
 - Exit **0**, `Claimed …` → the task is yours. Proceed.
 - Exit **4**, `Already claimed by another agent` → **stop**. Someone is already on
@@ -88,6 +111,10 @@ pass `--task <id>` to target a different one.
 
 ## Rules of thumb
 
+- **Pick a project first.** Every task belongs to a project; run `directive
+  project use <project-id>` once (or pass `--project`) so check-ins land in the
+  right place. If you're unsure which, list them with `directive project list`
+  and use the org's Default Project.
 - **Check in before working.** If check-in says the task is already claimed
   (exit 4), do not duplicate it.
 - **Prefer `directive start`** for anything runnable as a command — it can't forget
