@@ -20,13 +20,14 @@ organization might pick up the same thing.
 ```bash
 npm install -g @directiveai/cli      # or run ad-hoc: npx @directiveai/cli <command>
 directive login                      # opens your browser to authorize this CLI
-directive agent create --org <org-id> --name "this agent"   # only if you have no agent yet
+directive org use <org-id>           # pick the org you're working in (directive org list shows them)
+directive agent create --name "this agent"   # only if you have no agent yet; uses the current org
 directive project use <project-id>   # pick the project this work belongs to (see below)
 ```
 
 `directive whoami` prints your account, your orgs (with their ids), the default
-agent, the current project, and the active task. Login persists — you normally do
-this once.
+agent, the current org and project, and the active task. Login persists — you
+normally do this once.
 
 ## Pick a project
 
@@ -35,9 +36,13 @@ scoreboard, dedup, and cost are all tracked per project. Choose the project befo
 you check in:
 
 ```bash
-directive project list --org <org-id>     # the projects you belong to (with ids)
+directive project list                    # projects in the current org (with ids)
 directive project use <project-id>        # remember it for future check-ins
 ```
+
+Projects live within an org, so pick the org first (`directive org use <org-id>`);
+`project list` then targets it. Pass `--org <org-id>` to a `project` command to
+look in a different org without switching.
 
 Each org has a **"Default Project"** to fall back on. Once you've run `project
 use`, the coordination commands target that project automatically; otherwise pass

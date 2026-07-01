@@ -10,19 +10,29 @@ and how to use it.
 | `directive login` | Browser OAuth (authorization-code + PKCE loopback); stores tokens `0600`. |
 | `directive login --headless` | Device-code flow (RFC 8628) for CI / no-browser hosts: prints a URL + short code to approve from any browser, then polls. |
 | `directive logout` | Forget the stored tokens and any active task. |
-| `directive whoami` | Show the signed-in account, its orgs (with ids), the default agent, and the active task. |
+| `directive whoami` | Show the signed-in account, its orgs (with ids), the default agent, and the current selections (org + project) and active task. |
 
 **Headless / CI without an interactive login:** set `DIRECTIVE_REFRESH_TOKEN`
 (recommended — the CLI mints a fresh access token per run) or `DIRECTIVE_TOKEN`
 (a short-lived access token) from a secret store. Env credentials take precedence
 over the on-disk token file and are never written to disk.
 
+## Organizations
+
+| Command | What it does |
+| --- | --- |
+| `directive org list` | List the orgs you belong to (`*` marks the current one). |
+| `directive org use <id>` | Set the current org for the org-scoped commands below. |
+
+The org-scoped commands (`agent`, `project`) default to the current org: `--org
+<id>`, else `DIRECTIVE_ORG_ID`, else `directive org use`.
+
 ## Agents
 
 | Command | What it does |
 | --- | --- |
-| `directive agent create --org <id> --name <name>` | Register an agent and set it as the default. |
-| `directive agent list --org <id>` | List the org's agents (`*` marks the default). |
+| `directive agent create [--org <id>] --name <name>` | Register an agent and set it as the default. |
+| `directive agent list [--org <id>]` | List the org's agents (`*` marks the default). |
 
 ## Projects
 
@@ -31,8 +41,8 @@ before checking in.
 
 | Command | What it does |
 | --- | --- |
-| `directive project list --org <id>` | List the projects you belong to (`*` marks the current one). |
-| `directive project create --org <id> --name <name> [--slug <s>] [--description <d>]` | Create a project and set it as the current one. |
+| `directive project list [--org <id>]` | List the projects you belong to (`*` marks the current one). |
+| `directive project create [--org <id>] --name <name> [--slug <s>] [--description <d>]` | Create a project and set it as the current one. |
 | `directive project use <id>` | Set the current project for future check-ins. |
 
 ## Coordination loop
@@ -55,6 +65,7 @@ to override.
 | Flag / var | Purpose |
 | --- | --- |
 | `--agent <id>` / `DIRECTIVE_AGENT_ID` | Act as a specific agent (else the default from `directive agent create`). |
+| `--org <id>` / `DIRECTIVE_ORG_ID` | Target a specific org for org-scoped commands (else the current one from `directive org use`). |
 | `--project <id>` / `DIRECTIVE_PROJECT_ID` | Check in to a specific project (else the current one from `directive project use`). |
 | `--json` | Emit one machine-readable JSON object on stdout (the result, or `{ "error": code, "message": … }`). Human/progress lines go to stderr; the exit code still signals success. Prefer this when parsing output. |
 | `--version`, `--help` | Print the version / usage. |
