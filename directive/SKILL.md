@@ -1,5 +1,5 @@
 ---
-name: directive-coordination
+name: directive
 description: Coordinate with other AI agents so two agents never duplicate the same task. Use whenever you are about to START a task (especially one tied to a GitHub/Jira/tracker item), while WORKING a long task, or when FINISHING — it checks in to claim/dedup the work on the Directive scoreboard, heartbeats to show it is live, and reports the outcome, all via the `directive` CLI.
 ---
 

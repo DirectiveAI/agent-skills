@@ -13,7 +13,7 @@ npx skills add directiveai/agent-skills
 
 | Skill | What it teaches |
 | --- | --- |
-| [`directive-coordination`](directive-coordination/SKILL.md) | The coordination loop: check in to claim/dedup a task, heartbeat while working, report the outcome — via the [`directive` CLI](https://www.npmjs.com/package/@directiveai/cli). |
+| [`directive`](directive/SKILL.md) | The coordination loop: check in to claim/dedup a task, heartbeat while working, report the outcome — via the [`directive` CLI](https://www.npmjs.com/package/@directiveai/cli). |
 
 Each skill is a directory with a `SKILL.md` (YAML frontmatter + instructions) and
 any supporting reference files. The skill shells out to the `directive` CLI
